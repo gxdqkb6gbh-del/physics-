@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التقارير المعملية - الفيزياء</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Tajawal -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                            dark: '#0b132b',
+                            card: '#1c2541',
+                            accent: '#3a506b',
+                            highlight: '#6fffe9'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #0b132b;
+            color: #e2e8f0;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b132b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3a506b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6fffe9;
+        }
+
+        /* Card Hover Effects */
+        .glass-card {
+            background: rgba(28, 37, 65, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .tab-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #14b8a6 0%, #0f766e 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(20, 184, 166, 0.4);
+            border-color: #6fffe9;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .glass-card {
+                background: white !important;
+                border: 1px solid #ccc !important;
+                box-shadow: none !important;
+                color: black !important;
+            }
+            .text-brand-highlight {
+                color: #0f766e !important;
+            }
+            .text-gray-300, .text-gray-400 {
+                color: #333 !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Header Navigation -->
+    <header class="no-print sticky top-0 z-50 glass-card border-b border-slate-700/50 px-4 lg:px-8 py-4 mb-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-brand-500 to-brand-highlight flex items-center justify-center text-brand-dark font-black text-2xl shadow-lg">
+                    <i class="fa-solid fa-atom"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-black text-white tracking-wide">التقارير المعملية للفيزياء</h1>
+                    <p class="text-xs text-brand-highlight font-medium">لوحة التحكم والتفاعلات العلمية</p>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="flex items-center gap-3">
+                <button onclick="window.print()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-brand-highlight border border-slate-600 text-sm font-bold flex items-center gap-2 transition duration-200">
+                    <i class="fa-solid fa-print"></i>
+                    <span>طباعة التقرير الحالي</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 lg:px-8 w-full flex-1">
+        
+        <!-- Navigation Tabs -->
+        <section class="no-print mb-8">
+            <h2 class="text-sm font-bold text-gray-400 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-flask-vial text-brand-500"></i>
+                <span>اختر التجربة من القائمة:</span>
+            </h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                <button onclick="switchTab(1)" id="tab-1" class="tab-btn active p-3 rounded-xl border border-slate-700 glass-card text-right flex flex-col justify-between min-h-[90px]">
+                    <i class="fa-solid fa-arrows-spin text-xl text-brand-highlight mb-1"></i>
+                    <span class="text-xs font-bold leading-snug">1. التدوير والاستقرار</span>
+                </button>
+
+                <button onclick="switchTab(2)" id="tab-2" class="tab-btn p-3 rounded-xl border border-slate-700 glass-card text-right flex flex-col justify-between min-h-[90px]">
+                    <i class="fa-solid fa-scale-balanced text-xl text-brand-highlight mb-1"></i>
+                    <span class="text-xs font-bold leading-snug">2. الاتزان الانتقالي والدوراني</span>
+                </button>
+
+                <button onclick="switchTab(3)" id="tab-3" class="tab-btn p-3 rounded-xl border border-slate-700 glass-card text-right flex flex-col justify-between min-h-[90px]">
+                    <i class="fa-solid fa-bounce text-xl text-brand-highlight mb-1"></i>
+                    <span class="text-xs font-bold leading-snug">3. ارتفاع الارتداد</span>
+                </button>
+
+                <button onclick="switchTab(4)" id="tab-4" class="tab-btn p-3 rounded-xl border border-slate-700 glass-card text-right flex flex-col justify-between min-h-[90px]">
+                    <i class="fa-solid fa-car-burst text-xl text-brand-highlight mb-1"></i>
+                    <span class="text-xs font-bold leading-snug">4. الاصطدامات الملتحمة</span>
+                </button>
+
+                <button onclick="switchTab(5)" id="tab-5" class="tab-btn p-3 rounded-xl border border-slate-700 glass-card text-right flex flex-col justify-between min-h-[90px]">
+                    <i class="fa-solid fa-gear text-xl text-brand-highlight mb-1"></i>
+                    <span class="text-xs font-bold leading-snug">5. العجلة والمحور</span>
+                </button>
+
+                <button onclick="switchTab(6)" id="tab-6" class="tab-btn p-3 rounded-xl border border-slate-700 glass-card text-right flex flex-col justify-between min-h-[90px]">
+                    <i class="fa-solid fa-person-walking-arrow-loop-left text-xl text-brand-highlight mb-1"></i>
+                    <span class="text-xs font-bold leading-snug">6. صعود السلم والقدرة</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Dynamic Reports Area -->
+        <div id="reports-container">
+
+            <!-- ===================== EXPERIMENT 1 ===================== -->
+            <article id="report-1" class="report-card space-y-6">
+                <!-- Title Header -->
+                <div class="glass-card p-6 rounded-2xl border-r-8 border-brand-500 relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="bg-brand-500/20 text-brand-highlight border border-brand-500/30 text-xs px-3 py-1 rounded-full font-bold inline-block mb-2">تجربة رقم 01</span>
+                            <h2 class="text-2xl md:text-3xl font-black text-white">التدوير والاستقرار</h2>
+                            <p class="text-gray-300 text-sm mt-1">تأثير موقع مركز الكتلة في ثبات واستقرار الأجسام أثناء الحركة الدورانية</p>
+                        </div>
+                        <div class="hidden sm:block text-5xl text-brand-500/20">
+                            <i class="fa-solid fa-arrows-spin"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Objectives -->
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-bullseye text-brand-500"></i>
+                            <span>الهدف من التجربة</span>
+                        </div>
+                        <ul class="text-sm space-y-2 text-gray-200 list-disc list-inside">
+                            <li>معرفة تأثير موقع <strong class="text-brand-highlight">مركز الكتلة</strong> في استقرار الأجسام.</li>
+                            <li>تطوير المفهوم العلمي لمركز الكتلة واتزان الحركة الدورانية.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Safety -->
+                    <div class="glass-card p-5 rounded-2xl space-y-3 border-r-4 border-amber-500">
+                        <div class="flex items-center gap-2 text-amber-400 font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>أدوات والسلامة</span>
+                        </div>
+                        <p class="text-sm text-gray-200 leading-relaxed">
+                            ⚠️ <strong class="text-amber-300">توخي الحذر التام:</strong> الانتباه الشديد عند استخدام الأدوات الحادة (المقص) لتجنب الإصابات بالجروح أثناء قص قطع الكرتون المقوى.
+                        </p>
+                    </div>
+
+                    <!-- Tools -->
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-toolbox text-brand-500"></i>
+                            <span>الأدوات المستخدمة</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs text-gray-200 font-semibold">
+                            <div class="bg-slate-800/80 p-2 rounded-lg flex items-center gap-2">📦 قطعتان كرتون مقوى</div>
+                            <div class="bg-slate-800/80 p-2 rounded-lg flex items-center gap-2">✏️ قلم رصاص بـ ممحاة</div>
+                            <div class="bg-slate-800/80 p-2 rounded-lg flex items-center gap-2">✂️ مقص حاد</div>
+                            <div class="bg-slate-800/80 p-2 rounded-lg flex items-center gap-2">📏 مسطرة قياس</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Procedure -->
+                <div class="glass-card p-6 rounded-2xl space-y-4">
+                    <div class="flex items-center gap-2 text-brand-highlight font-bold text-xl border-b border-slate-700 pb-3">
+                        <i class="fa-solid fa-list-check text-brand-500"></i>
+                        <span>خطوات الإجراء والعمل</span>
+                    </div>
+                    <ol class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                        <li class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60 relative">
+                            <span class="absolute -top-3 right-4 bg-brand-500 text-brand-dark text-xs font-black px-2 py-0.5 rounded-full">1</span>
+                            قص قرصين من الكرتون المقوى بأقطار مختلفة (10 سم و 15 سم).
+                        </li>
+                        <li class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60 relative">
+                            <span class="absolute -top-3 right-4 bg-brand-500 text-brand-dark text-xs font-black px-2 py-0.5 rounded-full">2</span>
+                            محاولة تدوير قلم الرصاص بمفرده على الممحاة؛ يلاحظ أن زمن الدوران قبل السقوط قصير جداً.
+                        </li>
+                        <li class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60 relative">
+                            <span class="absolute -top-3 right-4 bg-brand-500 text-brand-dark text-xs font-black px-2 py-0.5 rounded-full">3</span>
+                            تثبيت القلم في مركز القرص الأول (10 سم) ومحاولة تدويرهما معاً.
+                        </li>
+                        <li class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60 relative">
+                            <span class="absolute -top-3 right-4 bg-brand-500 text-brand-dark text-xs font-black px-2 py-0.5 rounded-full">4</span>
+                            تغيير نقاط تثبيت القرص على ارتفاعات مختلفة على القلم لملاحظة تأثير التوازن.
+                        </li>
+                        <li class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60 relative">
+                            <span class="absolute -top-3 right-4 bg-brand-500 text-brand-dark text-xs font-black px-2 py-0.5 rounded-full">5</span>
+                            تكرار العملية باستخدام القرص الأكبر (15 سم) والمقارنة بين التجربتين.
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- Results & Data -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass-card p-6 rounded-2xl space-y-4">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-xl border-b border-slate-700 pb-3">
+                            <i class="fa-solid fa-square-poll-vertical text-brand-500"></i>
+                            <span>النتائج والمفاهيم</span>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div class="bg-emerald-950/40 border border-emerald-500/30 p-3.5 rounded-xl">
+                                <strong class="text-emerald-400 block mb-1">🟢 الجسم المستقر:</strong>
+                                هو الجسم الذي يحتاج إلى قوة خارجية لقلبه أو تحريكه، ويكون فيه مركز الكتلة يقع فوق قاعدة الجسم.
+                            </div>
+                            <div class="bg-rose-950/40 border border-rose-500/30 p-3.5 rounded-xl">
+                                <strong class="text-rose-400 block mb-1">🔴 الجسم غير المستقر:</strong>
+                                هو الجسم الذي يتحرك أو ينقلب دون تأثير قوة خارجية كبيرة، ويكون فيه مركز الكتلة خارج قاعدة الجسم.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conclusion Box -->
+                    <div class="glass-card p-6 rounded-2xl space-y-4 flex flex-col justify-between border-l-4 border-brand-highlight">
+                        <div>
+                            <div class="flex items-center gap-2 text-brand-highlight font-bold text-xl border-b border-slate-700 pb-3">
+                                <i class="fa-solid fa-lightbulb text-amber-400"></i>
+                               <span>الاستنتاج العلمـي</span>
+                            </div>
+                            <p class="text-gray-200 text-base leading-relaxed mt-4">
+                                " كلما كان القرص <strong class="text-brand-highlight">أكبر حجماً</strong> و<strong class="text-brand-highlight">أقرب إلى سطح الأرض</strong> (في الجزء السفلي من القلم)، زاد استقرار الجسم وزادت فترة دورانه وثباته نظراً لانخفاض موقع مركز الكتلة. "
+                            </p>
+                        </div>
+                        <div class="bg-slate-800/80 p-3 rounded-xl text-xs text-gray-400 flex items-center justify-between">
+                            <span></span>
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ===================== EXPERIMENT 2 ===================== -->
+            <article id="report-2" class="report-card hidden space-y-6">
+                <div class="glass-card p-6 rounded-2xl border-r-8 border-brand-500 relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="bg-brand-500/20 text-brand-highlight border border-brand-500/30 text-xs px-3 py-1 rounded-full font-bold inline-block mb-2">تجربة رقم 02</span>
+                            <h2 class="text-2xl md:text-3xl font-black text-white">الاتزان الانتقالي والاتزان الدوراني</h2>
+                            <p class="text-gray-300 text-sm mt-1">حساب محصلة القوى والعزوم لتحقيق شروط الاتزان الميكانيكي</p>
+                        </div>
+                        <div class="hidden sm:block text-5xl text-brand-500/20">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-bullseye text-brand-500"></i>
+                            <span>الهدف من التجربة</span>
+                        </div>
+                        <p class="text-sm text-gray-200">إيجاد محصلة العزوم في اتجاهين مختلفين لتحقيق شرط الاتزان الدوراني والانتقالي.</p>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl space-y-3 border-r-4 border-amber-500">
+                        <div class="flex items-center gap-2 text-amber-400 font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>أدوات والسلامة</span>
+                        </div>
+                        <ul class="text-xs text-gray-200 space-y-1.5 list-disc list-inside">
+                            <li>التعامل بحذر مع الأوزان الثقيلة لتجنب سقوطها.</li>
+                            <li>التأكد من تثبيت الأدوات والموازين جيداً على الحامل.</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-toolbox text-brand-500"></i>
+                            <span>الأدوات المستخدمة</span>
+                        </div>
+                        <div class="grid grid-cols-1 gap-1 text-xs text-gray-200 font-semibold">
+                            <div class="bg-slate-800/80 p-2 rounded-lg">⚖️ ميزانان نابضيان (بتدريج 5 نيوتن)</div>
+                            <div class="bg-slate-800/80 p-2 rounded-lg">📏 مسطرة مترية</div>
+                            <div class="bg-slate-800/80 p-2 rounded-lg">🏋️ كتل مختلفة الوزن (400جم، 200جم)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Steps -->
+                <div class="glass-card p-6 rounded-2xl space-y-4">
+                    <div class="flex items-center gap-2 text-brand-highlight font-bold text-xl border-b border-slate-700 pb-3">
+                        <i class="fa-solid fa-list-check text-brand-500"></i>
+                        <span>خطوات الإجراء</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60 flex gap-3">
+                            <span class="bg-brand-500 text-brand-dark w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0">1</span>
+                            <span>تعليق المسطرة بواسطة النابض مع ترك مسافة 10 سم من كل طرف.</span>
+                        </div>
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60 flex gap-3">
+                            <span class="bg-brand-500 text-brand-dark w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0">2</span>
+                            <span>حساب العزوم المؤثرة للأسفل: عزم المسطرة وعزم الكتلتين المعلقتين.</span>
+                        </div>
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60 flex gap-3">
+                            <span class="bg-brand-500 text-brand-dark w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0">3</span>
+                            <span>حساب ذراع القوة لكل كتلة من نقطة تأثيرها حتى محور الدوران (الميزان الأيسر).</span>
+                        </div>
+                        <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700/60 flex gap-3">
+                            <span class="bg-brand-500 text-brand-dark w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0">4</span>
+                            <span>حساب عزم قوة الشد في الميزان الأيمن، حيث يكون ذراع القوة 80 سم.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Math & Results -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass-card p-6 rounded-2xl space-y-4">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-xl border-b border-slate-700 pb-3">
+                            <i class="fa-solid fa-calculator text-brand-500"></i>
+                            <span>الحساب الرياضي والمعادلات</span>
+                        </div>
+                        <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-700 font-mono text-xs text-brand-highlight space-y-2 dir-ltr text-right">
+                            <p>∑ τ = 0 (حالة الاتزان الدوراني)</p>
+                            <p>τ_clockwise = (m1 × g × r1) + (m2 × g × r2) + (m_bar × g × r_bar)</p>
+                            <p>τ_counterclockwise = F_tension × r_tension</p>
+                            <p class="text-amber-400">∑ τ_أسفل = ∑ τ_أعلى</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl space-y-4 border-l-4 border-brand-500">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-xl border-b border-slate-700 pb-3">
+                            <i class="fa-solid fa-square-check text-emerald-400"></i>
+                            <span>النتائج والاستنتاج</span>
+                        </div>
+                        <p class="text-sm text-gray-200 leading-relaxed">
+                            إثبات عملي لشرط الاتزان: <strong class="text-brand-highlight">مجموع العزوم المؤثرة في اتجاه عقارب الساعة (لأسفل) يساوي عزم قوة الشد المؤثر في الاتجاه المعاكس (لأعلى)</strong> عند حالة الاتزان التام للسيستم.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ===================== EXPERIMENT 3 ===================== -->
+            <article id="report-3" class="report-card hidden space-y-6">
+                <div class="glass-card p-6 rounded-2xl border-r-8 border-brand-500 relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="bg-brand-500/20 text-brand-highlight border border-brand-500/30 text-xs px-3 py-1 rounded-full font-bold inline-block mb-2">تجربة رقم 03</span>
+                            <h2 class="text-2xl md:text-3xl font-black text-white">ارتفاع الارتداد حفظ الزخم</h2>
+                            <p class="text-gray-300 text-sm mt-1">قياس انتقال الطاقة والزخم بين الكرات المطاطية أثناء التصادم</p>
+                        </div>
+                        <div class="hidden sm:block text-5xl text-brand-500/20">
+                            <i class="fa-solid fa-bounce"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-bullseye text-brand-500"></i>
+                            <span>الهدف من التجربة</span>
+                        </div>
+                        <p class="text-sm text-gray-200">قياس ومقارنة ارتفاعات ارتداد كرات مطاطية عند إسقاطها بشكل منفرد ثم بشكل مجتمع.</p>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl space-y-3 border-r-4 border-amber-500">
+                        <div class="flex items-center gap-2 text-amber-400 font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>أدوات والسلامة</span>
+                        </div>
+                        <p class="text-sm text-gray-200">
+                            ⚠️ البقاء بعيداً عن مسار ارتداد الكرات لتجنب الاصطدام غير المقصود بالوجه أو العينين.
+                        </p>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-toolbox text-brand-500"></i>
+                            <span>الأدوات المستخدمة</span>
+                        </div>
+                        <div class="grid grid-cols-1 gap-1 text-xs text-gray-200 font-semibold">
+                            <div class="bg-slate-800/80 p-2 rounded-lg">🏀 كرة مطاطية كبيرة</div>
+                            <div class="bg-slate-800/80 p-2 rounded-lg">🎾 كرة مطاطية صغيرة</div>
+                            <div class="bg-slate-800/80 p-2 rounded-lg">📏 مسطرة قياس متري</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Steps -->
+                <div class="glass-card p-6 rounded-2xl space-y-4">
+                    <div class="flex items-center gap-2 text-brand-highlight font-bold text-xl border-b border-slate-700 pb-3">
+                        <i class="fa-solid fa-list-check text-brand-500"></i>
+                        <span>خطوات الإجراء</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                        <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 space-y-2">
+                            <span class="text-brand-highlight font-bold">خطوة 1:</span>
+                            <p>إسقاط الكرة الكبيرة منفردة من ارتفاع 15 سم وتسجيل ارتفاع الارتداد.</p>
+                        </div>
+                        <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 space-y-2">
+                            <span class="text-brand-highlight font-bold">خطوة 2:</span>
+                            <p>تكرار مع الكرة الصغيرة منفردة وملاحظة أن ارتدادها أعلى نسبياً من الكبيرة.</p>
+                        </div>
+                        <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 space-y-2">
+                            <span class="text-brand-highlight font-bold">خطوة 3:</span>
+                            <p>وضع الكرة الصغيرة فوق الكرة الكبيرة متلامستين وإسقاطهما معاً من نفس الارتفاع.</p>
+                        </div>
+                        <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 space-y-2">
+                            <span class="text-brand-highlight font-bold">خطوة 4:</span>
+                            <p>قياس وتسجيل الارتفاع الخيالي لارتداد الكرة الصغيرة بعد التصادم.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="glass-card p-6 rounded-2xl space-y-4">
+                    <div class="flex items-center gap-2 text-brand-highlight font-bold text-xl border-b border-slate-700 pb-3">
+                        <i class="fa-solid fa-square-poll-vertical text-brand-500"></i>
+                        <span>النتائج والاستنتاج الفيزيائي</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700">
+                            <h4 class="font-bold text-brand-highlight mb-2">⚡ انتقال الزخم:</h4>
+                            <p class="text-gray-300">عند سقوط الكرتين معاً، تنتقل معظم الطاقة والزخم من الكرة الكبيرة إلى الكرة الصغيرة لحظة التصادم بالأرض.</p>
+                        </div>
+                        <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700">
+                            <h4 class="font-bold text-brand-highlight mb-2">🚀 تباين الارتفاع:</h4>
+                            <p class="text-gray-300">ترتد الكرة الكبيرة لارتفاع شبه معدوم، بينما تقفز الكرة الصغيرة لارتفاع شاهق جداً بسبب صغر كتلتها ($P = m \cdot v$).</p>
+                        </div>
+                        <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700">
+                            <h4 class="font-bold text-brand-highlight mb-2">🛡️ قانون الحفظ:</h4>
+                            <p class="text-gray-300">يظل الزخم الكلي للنظام محفوظاً خلال التصادم المرن ($P_{initial} = P_{final}$).</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ===================== EXPERIMENT 4 ===================== -->
+            <article id="report-4" class="report-card hidden space-y-6">
+                <div class="glass-card p-6 rounded-2xl border-r-8 border-brand-500 relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="bg-brand-500/20 text-brand-highlight border border-brand-500/30 text-xs px-3 py-1 rounded-full font-bold inline-block mb-2">تجربة رقم 04</span>
+                            <h2 class="text-2xl md:text-3xl font-black text-white">الإصطدامات الملتحمة (حفظ كمية التحرك)</h2>
+                            <p class="text-gray-300 text-sm mt-1">تحليل حركة عربات التصادم والتحقق من بقاء كمية التحرك</p>
+                        </div>
+                        <div class="hidden sm:block text-5xl text-brand-500/20">
+                            <i class="fa-solid fa-car-burst"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-bullseye text-brand-500"></i>
+                            <span>الهدف من التجربة</span>
+                        </div>
+                        <p class="text-sm text-gray-200">التعرف على طبيعة الأجسام الملتحمة وكيفية التصادم بين الأجسام والتحقق من حفظ كمية التحرك.</p>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl space-y-3 border-r-4 border-amber-500">
+                        <div class="flex items-center gap-2 text-amber-400 font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>السلامة بالمختبر</span>
+                        </div>
+                        <p class="text-xs text-gray-200 leading-relaxed">
+                            مراعاة الهدوء والنظام، عدم العبث بالأجهزة الكهربائية، عدم استخدام اللمس أو الشم للتعرف على المواد، والحفاظ على نظافة المكان.
+                        </p>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-toolbox text-brand-500"></i>
+                            <span>الأدوات</span>
+                        </div>
+                        <div class="text-xs text-gray-200 space-y-1">
+                            <div class="bg-slate-800/80 p-2 rounded-lg">🏎️ عربتان متطابقتان مع وسائط الالتحام</div>
+                            <div class="bg-slate-800/80 p-2 rounded-lg">⏱️ مستشعرات ضوئية لقياس السرعة والكتلة</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Data -->
+                <div class="glass-card p-6 rounded-2xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-xl">
+                            <i class="fa-solid fa-table text-brand-500"></i>
+                            <span>جدول بيانات التصادمات (Clip 1 - Clip 5)</span>
+                        </div>
+                        <span class="text-xs text-gray-400">الوحدات: الكتلة (جم)، السرعة (سم/ث)</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-right text-gray-200 border-collapse">
+                            <thead>
+                                <tr class="bg-slate-800/80 text-brand-highlight border-b border-slate-700">
+                                    <th class="p-3">الاختبار</th>
+                                    <th class="p-3">كتلة العربة 1 ($m_1$)</th>
+                                    <th class="p-3">كتلة العربة 2 ($m_2$)</th>
+                                    <th class="p-3">السرعة الابتدائية ($v_1$)</th>
+                                    <th class="p-3">السرعة النهائية المشتركة ($v_f$)</th>
+                                    <th class="p-3">نوع التصادم</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800">
+                                <tr class="hover:bg-slate-800/40">
+                                    <td class="p-3 font-bold">Clip 1</td>
+                                    <td class="p-3">500 جم</td>
+                                    <td class="p-3">500 جم</td>
+                                    <td class="p-3">20 سم/ث</td>
+                                    <td class="p-3 text-emerald-400 font-bold">10 سم/ث</td>
+                                    <td class="p-3"><span class="bg-brand-500/20 text-brand-highlight px-2 py-1 rounded text-xs">كلي الالتحام</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/40">
+                                    <td class="p-3 font-bold">Clip 2</td>
+                                    <td class="p-3">500 جم</td>
+                                    <td class="p-3">1000 جم</td>
+                                    <td class="p-3">30 سم/ث</td>
+                                    <td class="p-3 text-emerald-400 font-bold">10 سم/ث</td>
+                                    <td class="p-3"><span class="bg-brand-500/20 text-brand-highlight px-2 py-1 rounded text-xs">غير مرن</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/40">
+                                    <td class="p-3 font-bold">Clip 3-5</td>
+                                    <td class="p-3">متغيرة</td>
+                                    <td class="p-3">متغيرة</td>
+                                    <td class="p-3">سرعات مختلفة</td>
+                                    <td class="p-3 text-emerald-400 font-bold">حسب القانون</td>
+                                    <td class="p-3"><span class="bg-brand-500/20 text-brand-highlight px-2 py-1 rounded text-xs">تطبيقات متعددة</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Equation Box -->
+                <div class="glass-card p-6 rounded-2xl border-l-4 border-brand-500">
+                    <h4 class="text-brand-highlight font-bold mb-2">📐 المعادلة العامة المطبقة:</h4>
+                    <p class="font-mono text-sm text-gray-200 dir-ltr text-right bg-slate-900/80 p-3 rounded-lg">
+                        m1 · v1i + m2 · v2i = (m1 + m2) · vf
+                    </p>
+                    <p class="text-xs text-gray-400 mt-2">تثبت البيانات العملية التحقق التام من قانون حفظ كمية التحرك للأنظمة المغزولة.</p>
+                </div>
+            </article>
+
+            <!-- ===================== EXPERIMENT 5 ===================== -->
+            <article id="report-5" class="report-card hidden space-y-6">
+                <div class="glass-card p-6 rounded-2xl border-r-8 border-brand-500 relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="bg-brand-500/20 text-brand-highlight border border-brand-500/30 text-xs px-3 py-1 rounded-full font-bold inline-block mb-2">تجربة رقم 05</span>
+                            <h2 class="text-2xl md:text-3xl font-black text-white">عرض العجلة والمحور</h2>
+                            <p class="text-gray-300 text-sm mt-1">دراسة الآلات البسيطة ومضاعفة القوى وتغيير المسافات</p>
+                        </div>
+                        <div class="hidden sm:block text-5xl text-brand-500/20">
+                            <i class="fa-solid fa-gear"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-bullseye text-brand-500"></i>
+                            <span>الهدف من التجربة</span>
+                        </div>
+                        <p class="text-sm text-gray-200">دراسة كيفية عمل الآلات البسيطة (العجلة والمحور) في نقل الحركة ومضاعفة القوة وتغيير المسافة.</p>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl space-y-3 border-r-4 border-amber-500">
+                        <div class="flex items-center gap-2 text-amber-400 font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>أدوات والسلامة</span>
+                        </div>
+                        <p class="text-sm text-gray-200">
+                            ⚠️ الحذر عند التعامل مع الأثقال والأجزاء المعدنية للجهاز لتجنب سقوطها أو انحشار الأصابع.
+                        </p>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-toolbox text-brand-500"></i>
+                            <span>الأدوات المستخدمة</span>
+                        </div>
+                        <div class="text-xs text-gray-200 space-y-1 font-semibold">
+                            <div class="bg-slate-800/80 p-2 rounded-lg">☸️ جهاز العجلة والمحور المثبت</div>
+                            <div class="bg-slate-800/80 p-2 rounded-lg">🏋️ أثقال وأوزان معلقة بخيوط</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calculations & Results -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass-card p-6 rounded-2xl space-y-4">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-xl border-b border-slate-700 pb-3">
+                            <i class="fa-solid fa-calculator text-brand-500"></i>
+                            <span>الحسابات والمخرجات الحسابية</span>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between bg-slate-800/60 p-3 rounded-lg">
+                                <span class="text-gray-300">الكتلة المستخدمة ($m$):</span>
+                                <span class="font-bold text-white">0.2 كجم</span>
+                            </div>
+                            <div class="flex justify-between bg-slate-800/60 p-3 rounded-lg">
+                                <span class="text-gray-300">القوة ($F = m \cdot g$):</span>
+                                <span class="font-bold text-brand-highlight">0.2 × 9.8 = 1.96 نيوتن</span>
+                            </div>
+                            <div class="flex justify-between bg-slate-800/60 p-3 rounded-lg">
+                                <span class="text-gray-300">الشغل المبذول ($W = F \cdot d$):</span>
+                                <span class="font-bold text-emerald-400">1.96 × 0.2 = 0.392 جول</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-2xl space-y-4 border-l-4 border-brand-500">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-xl border-b border-slate-700 pb-3">
+                            <i class="fa-solid fa-lightbulb text-amber-400"></i>
+                            <span>النتائج العلمية</span>
+                        </div>
+                        <p class="text-sm text-gray-200 leading-relaxed">
+                            أوضحت التجربة أن استخدام العجلة والمحور يساعد في تقليل القوة اللازمة لرفع الأثقال من خلال التلاعب بالمسافات (المضاعفة الميكانيكية)، مع ثبات الشغل المبذول كلياً.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ===================== EXPERIMENT 6 ===================== -->
+            <article id="report-6" class="report-card hidden space-y-6">
+                <div class="glass-card p-6 rounded-2xl border-r-8 border-brand-500 relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="bg-brand-500/20 text-brand-highlight border border-brand-500/30 text-xs px-3 py-1 rounded-full font-bold inline-block mb-2">تجربة رقم 06</span>
+                            <h2 class="text-2xl md:text-3xl font-black text-white">صعود السلم والقدرة الميكانيكية</h2>
+                            <p class="text-gray-300 text-sm mt-1">حساب القدرة المبذولة وعلاقتها بالشغل والزمن</p>
+                        </div>
+                        <div class="hidden sm:block text-5xl text-brand-500/20">
+                            <i class="fa-solid fa-person-walking-arrow-loop-left"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-bullseye text-brand-500"></i>
+                            <span>الهدف من التجربة</span>
+                        </div>
+                        <p class="text-sm text-gray-200">حساب القدرة المبذولة عند صعود السلم، ومعرفة العوامل المؤثرة فيها، وربط علاقة الشغل بالقدرة.</p>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl space-y-3 border-r-4 border-amber-500">
+                        <div class="flex items-center gap-2 text-amber-400 font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>أدوات والسلامة</span>
+                        </div>
+                        <p class="text-sm text-gray-200">
+                            ⚠️ توخي الحذر عند صعود السلم بسرعة لتجنب الانزلاق أو التعثر.
+                        </p>
+                    </div>
+
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-lg border-b border-slate-700 pb-2">
+                            <i class="fa-solid fa-toolbox text-brand-500"></i>
+                            <span>الأدوات المستخدمة</span>
+                        </div>
+                        <div class="grid grid-cols-1 gap-1 text-xs text-gray-200 font-semibold">
+                            <div class="bg-slate-800/80 p-2 rounded-lg">⏱️ ساعة إيقاف دقيقة</div>
+                            <div class="bg-slate-800/80 p-2 rounded-lg">📏 مسطرة مترية / شريط قياس</div>
+                            <div class="bg-slate-800/80 p-2 rounded-lg">⚖️ ميزان قياس الكتلة المنزلي</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Data -->
+                <div class="glass-card p-6 rounded-2xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                        <div class="flex items-center gap-2 text-brand-highlight font-bold text-xl">
+                            <i class="fa-solid fa-table text-brand-500"></i>
+                            <span>جدول نتائج اختبارات القدرة للأشخاص (المسافة ثابتة = 2 متر)</span>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-right text-gray-200 border-collapse">
+                            <thead>
+                                <tr class="bg-slate-800/80 text-brand-highlight border-b border-slate-700">
+                                    <th class="p-3">الشخص</th>
+                                    <th class="p-3">الكتلة (كجم)</th>
+                                    <th class="p-3">الوزن ($F_g = m \cdot 9.8$)</th>
+                                    <th class="p-3">الشغل ($W = F \cdot 2m$)</th>
+                                    <th class="p-3">الزمن المستغرق</th>
+                                    <th class="p-3">القدرة الناتجة ($P = W / t$)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800">
+                                <tr class="hover:bg-slate-800/40">
+                                    <td class="p-3 font-bold">الشخص الأول</td>
+                                    <td class="p-3">متغير</td>
+                                    <td class="p-3">حسب الكتلة</td>
+                                    <td class="p-3">حسب الوزن</td>
+                                    <td class="p-3">سريع</td>
+                                    <td class="p-3 font-bold text-emerald-400">~ 95 واط</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/40">
+                                    <td class="p-3 font-bold">الشخص الثاني</td>
+                                    <td class="p-3">متغير</td>
+                                    <td class="p-3">حسب الكتلة</td>
+                                    <td class="p-3">حسب الوزن</td>
+                                    <td class="p-3">متوسط</td>
+                                    <td class="p-3 font-bold text-emerald-400">~ 87 واط</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/40">
+                                    <td class="p-3 font-bold">الشخص الثالث</td>
+                                    <td class="p-3">متغير</td>
+                                    <td class="p-3">حسب الكتلة</td>
+                                    <td class="p-3">حسب الوزن</td>
+                                    <td class="p-3">متوسط-سريع</td>
+                                    <td class="p-3 font-bold text-emerald-400">~ 93 واط</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Conclusion -->
+                <div class="glass-card p-6 rounded-2xl border-l-4 border-brand-highlight space-y-3">
+                    <h4 class="text-brand-highlight font-bold text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span>الاستنتاج العلمي:</span>
+                    </h4>
+                    <p class="text-gray-200 text-sm leading-relaxed">
+                        تتناسب القدرة ($P$) <strong class="text-brand-highlight">طردياً مع الشغل المبذول</strong> و<strong class="text-brand-highlight">عكسياً مع الزمن المستغرق</strong>. كلما تم إنجاز الشغل في زمن أقل، كانت القدرة الميكانيكية الناتجة أعلى.
+                    </p>
+                </div>
+            </article>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="no-print mt-12 glass-card border-t border-slate-700/50 py-6 text-center text-xs text-gray-400">
+        <p>لوحة التحكم والتجريب المعملي للفيزياء © 2026 - تم الإعداد والتنسيق وفق معايير التقرير العلمي الداعم للتعلم التفاعلي</p>
+    </footer>
+
+    <!-- Tab Switching Logic Script -->
+    <script>
+        function switchTab(index) {
+            // Hide all reports
+            const reports = document.querySelectorAll('.report-card');
+            reports.forEach(report => report.classList.add('hidden'));
+
+            // Deactivate all tab buttons
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected report
+            const selectedReport = document.getElementById(`report-${index}`);
+            if (selectedReport) {
+                selectedReport.classList.remove('hidden');
+            }
+
+            // Activate selected tab button
+            const selectedTab = document.getElementById(`tab-${index}`);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+
+            // Scroll to top of report content smoothly
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+</body>
+</html>
